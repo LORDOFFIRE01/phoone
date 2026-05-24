@@ -146,11 +146,17 @@
         const remoteVideo = document.getElementById('remoteVideo');
 
         // Turn on camera and tell the matchmaker we are in the room
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
-            localVideo.srcObject = stream;
-            localStream = stream;
-            socket.emit('join', ROOM); 
-        });
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                localVideo.srcObject = stream;
+                localStream = stream;
+                socket.emit('join', ROOM); 
+            })
+            .catch(error => {
+                // If Brave blocks the camera, this alert will pop up and tell you!
+                alert("Camera Blocked! Please click the slider icon next to the URL and set Camera to 'Allow'.");
+                console.error("Camera Error:", error);
+            });
 
         // --- The WebRTC Handshake Logic ---
         socket.on('ready', createOffer);
@@ -159,3 +165,43 @@
             setupPeerConnection();
             await peerConnection.setRemoteDescription(offer);
             const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            socket.emit('answer', answer, ROOM);
+        });
+
+        socket.on('answer', (answer) => peerConnection.setRemoteDescription(answer));
+        socket.on('candidate', (candidate) => peerConnection.addIceCandidate(new RTCIceCandidate(candidate)));
+
+        document.getElementById('startCall').onclick = createOffer;
+
+        async function createOffer() {
+            setupPeerConnection();
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('offer', offer, ROOM);
+        }
+
+        function setupPeerConnection() {
+            if (peerConnection) return; // Don't setup twice
+            peerConnection = new RTCPeerConnection(servers);
+            
+            // Pack our video/audio into the connection
+            if (localStream) {
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+            }
+            
+            // When we receive the other person's video, put it in the right box
+            peerConnection.ontrack = event => {
+                remoteVideo.srcObject = event.streams[0];
+            };
+
+            // Send network routing info to the matchmaker
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    socket.emit('candidate', event.candidate, ROOM);
+                }
+            };
+        }
+    </script>
+</body>
+</html>
