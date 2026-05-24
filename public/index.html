@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>phoone</title>
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
-
     * {
         box-sizing: border-box;
         margin: 0;
@@ -12,9 +11,9 @@
     }
 
     body {
-        background-color: #050508; 
-        color: #e0e0e0;
-        font-family: 'Space Grotesk', sans-serif;
+        background-color: #050505; 
+        color: #fff;
+        font-family: 'Courier New', Courier, monospace;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -22,39 +21,22 @@
         overflow: hidden; 
     }
 
-    /* 90s CRT Scanline Overlay */
-    .scanlines {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-        background-size: 100% 4px;
-        z-index: 15;
-        pointer-events: none; /* Lets you click right through it */
-    }
-
-    /* Glowing Retro Title */
     .header {
         position: absolute;
-        top: 30px;
-        left: 40px;
-        font-size: 28px;
-        font-weight: 700;
-        letter-spacing: 2px;
-        text-transform: lowercase;
+        top: 24px;
+        left: 24px;
+        font-size: 16px;
+        font-weight: bold;
+        letter-spacing: 4px;
+        text-transform: uppercase;
         z-index: 100;
-        color: #ff9d00;
-        text-shadow: 0 0 10px rgba(255, 157, 0, 0.6), 0 0 20px rgba(255, 157, 0, 0.4);
     }
 
     .video-container {
         position: relative;
         width: 100%;
-        max-width: 1600px;
         height: 100vh;
-        background: #0a0a0f;
+        background: #000;
         overflow: hidden;
     }
 
@@ -62,110 +44,92 @@
         width: 100%;
         height: 100%;
         object-fit: cover; 
-        background: radial-gradient(circle at center, #1a1a24 0%, #050508 100%);
     }
 
-    /* Draggable PIP Window */
+    /* Draggable PIP - Sharp, minimal border */
     #localVideo {
         position: absolute;
-        top: 30px;
-        right: 40px;
+        top: 24px;
+        right: 24px;
         width: 160px;
         height: 220px;
         object-fit: cover;
-        border-radius: 12px;
-        border: 1px solid rgba(0, 255, 255, 0.3);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 255, 255, 0.2);
-        background: #000;
+        border: 1px solid #333;
+        background: #0a0a0a;
         z-index: 20;
-        cursor: grab; /* Shows the grab hand */
+        cursor: grab; 
     }
 
     #localVideo:active {
         cursor: grabbing;
     }
 
-    /* Ultra-Sleek Glass Dock */
+    /* Utilitarian Control Dock */
     .controls {
         position: absolute;
-        bottom: 50px;
+        bottom: 40px;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
-        gap: 20px;
-        z-index: 25;
-        background: rgba(10, 10, 15, 0.5);
-        padding: 16px 32px;
-        border-radius: 16px;
-        backdrop-filter: blur(20px); 
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-top: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        gap: 12px;
+        z-index: 30;
     }
 
     button {
-        padding: 14px 32px;
-        font-size: 15px;
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
+        padding: 12px 24px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 14px;
+        font-weight: bold;
         letter-spacing: 1px;
-        border: none;
-        border-radius: 8px;
+        border: 1px solid #444;
+        background: #0a0a0a;
+        color: #fff;
         cursor: pointer;
-        color: white;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition: background-color 0.2s, color 0.2s;
+        text-transform: uppercase;
     }
 
-    /* Start Button - Cyan Glow */
+    button:hover {
+        background: #222;
+    }
+
+    /* High-contrast primary action */
     .btn-start { 
-        background-color: #00d2ff; 
+        background: #fff; 
         color: #000;
-        box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        border: 1px solid #fff;
     }
     .btn-start:hover { 
-        background-color: #33dbff;
-        box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
-        transform: translateY(-2px);
+        background: #ccc; 
     }
 
-    /* End Call Button - Neon Red */
     .btn-end { 
-        background-color: #ff2a2a; 
-        box-shadow: 0 0 15px rgba(255, 42, 42, 0.4);
+        border-color: #da373c; 
+        color: #da373c;
     }
     .btn-end:hover { 
-        background-color: #ff4d4d; 
-        box-shadow: 0 0 25px rgba(255, 42, 42, 0.6);
-        transform: translateY(-2px);
+        background: #da373c; 
+        color: #000;
     }
 
-    /* Hardware Toggles */
-    .btn-action { 
-        background-color: rgba(255, 255, 255, 0.05); 
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .btn-action:hover { 
-        background-color: rgba(255, 255, 255, 0.1); 
-        transform: translateY(-2px);
-    }
+    /* Strikethrough for muted states */
     .btn-action.off { 
-        background-color: rgba(255, 42, 42, 0.2); 
-        color: #ff4d4d;
-        border-color: rgba(255, 42, 42, 0.4);
+        color: #555;
+        text-decoration: line-through;
+        border-color: #222;
     }
     </style>
 </head>
 <body>
     <div class="header">phoone</div>
-    <div class="scanlines"></div>
 
     <div class="video-container">
         <video id="remoteVideo" autoplay playsinline></video>
         <video id="localVideo" autoplay muted playsinline></video>
         
         <div class="controls">
-            <button id="toggleMic" class="btn-action">MIC: ON</button>
-            <button id="toggleCam" class="btn-action">CAM: ON</button>
+            <button id="toggleMic" class="btn-action">MIC</button>
+            <button id="toggleCam" class="btn-action">CAM</button>
             <button id="callBtn" class="btn-start">CONNECT</button>
         </div>
     </div>
@@ -179,26 +143,10 @@
         const servers = {
           iceServers: [
               { urls: "stun:stun.relay.metered.ca:80" },
-              {
-                urls: "turn:global.relay.metered.ca:80",
-                username: "d25b01ec5307ea9a13c43ce0",
-                credential: "JCeMZ+O/ePNtXufN",
-              },
-              {
-                urls: "turn:global.relay.metered.ca:80?transport=tcp",
-                username: "d25b01ec5307ea9a13c43ce0",
-                credential: "JCeMZ+O/ePNtXufN",
-              },
-              {
-                urls: "turn:global.relay.metered.ca:443",
-                username: "d25b01ec5307ea9a13c43ce0",
-                credential: "JCeMZ+O/ePNtXufN",
-              },
-              {
-                urls: "turns:global.relay.metered.ca:443?transport=tcp",
-                username: "d25b01ec5307ea9a13c43ce0",
-                credential: "JCeMZ+O/ePNtXufN",
-              },
+              { urls: "turn:global.relay.metered.ca:80", username: "d25b01ec5307ea9a13c43ce0", credential: "JCeMZ+O/ePNtXufN" },
+              { urls: "turn:global.relay.metered.ca:80?transport=tcp", username: "d25b01ec5307ea9a13c43ce0", credential: "JCeMZ+O/ePNtXufN" },
+              { urls: "turn:global.relay.metered.ca:443", username: "d25b01ec5307ea9a13c43ce0", credential: "JCeMZ+O/ePNtXufN" },
+              { urls: "turns:global.relay.metered.ca:443?transport=tcp", username: "d25b01ec5307ea9a13c43ce0", credential: "JCeMZ+O/ePNtXufN" }
           ]
         };
 
@@ -218,7 +166,6 @@
 
         document.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
-            // Override the default right-align to allow free movement
             localVideo.style.right = 'auto'; 
             localVideo.style.left = (e.clientX - offsetX) + 'px';
             localVideo.style.top = (e.clientY - offsetY) + 'px';
@@ -237,9 +184,83 @@
                 socket.emit('join', ROOM); 
             })
             .catch(error => {
-                alert("Camera Blocked! Please allow permissions in your browser.");
+                alert("Camera blocked! Check the padlock icon in your Brave URL bar.");
                 console.error("Camera Error:", error);
             });
 
         // --- Hardware Controls ---
-        document.getElementById('toggleMic').onclick
+        document.getElementById('toggleMic').onclick = () => {
+            if (!localStream) return;
+            const audioTrack = localStream.getAudioTracks()[0];
+            if (audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                document.getElementById('toggleMic').classList.toggle('off'); 
+            }
+        };
+
+        document.getElementById('toggleCam').onclick = () => {
+            if (!localStream) return;
+            const videoTrack = localStream.getVideoTracks()[0];
+            if (videoTrack) {
+                videoTrack.enabled = !videoTrack.enabled;
+                document.getElementById('toggleCam').classList.toggle('off'); 
+            }
+        };
+
+        // --- WebRTC Handshake ---
+        socket.on('ready', createOffer);
+        
+        socket.on('offer', async (offer) => {
+            setupPeerConnection();
+            await peerConnection.setRemoteDescription(offer);
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            socket.emit('answer', answer, ROOM);
+        });
+
+        socket.on('answer', (answer) => peerConnection.setRemoteDescription(answer));
+        socket.on('candidate', (candidate) => peerConnection.addIceCandidate(new RTCIceCandidate(candidate)));
+
+        document.getElementById('callBtn').onclick = createOffer;
+
+        async function createOffer() {
+            setupPeerConnection();
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('offer', offer, ROOM);
+        }
+
+        function setupPeerConnection() {
+            if (peerConnection) return; 
+            peerConnection = new RTCPeerConnection(servers);
+            
+            if (localStream) {
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+            }
+            
+            peerConnection.ontrack = event => {
+                remoteVideo.srcObject = event.streams[0];
+            };
+
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    socket.emit('candidate', event.candidate, ROOM);
+                }
+            };
+
+            peerConnection.onconnectionstatechange = () => {
+                if (peerConnection.connectionState === 'connected') {
+                    const callBtn = document.getElementById('callBtn');
+                    callBtn.innerText = "DISCONNECT";
+                    callBtn.classList.remove('btn-start');
+                    callBtn.classList.add('btn-end');
+                    
+                    callBtn.onclick = () => {
+                        window.location.reload(); 
+                    };
+                }
+            };
+        }
+    </script>
+</body>
+</html>
