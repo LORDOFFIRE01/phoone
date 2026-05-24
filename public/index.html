@@ -3,6 +3,8 @@
 <head>
     <title>phoone</title>
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
+
     * {
         box-sizing: border-box;
         margin: 0;
@@ -10,9 +12,9 @@
     }
 
     body {
-        background-color: #0f1115; 
-        color: #ffffff;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #050508; 
+        color: #e0e0e0;
+        font-family: 'Space Grotesk', sans-serif;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -20,24 +22,39 @@
         overflow: hidden; 
     }
 
-    /* Floating brand name */
+    /* 90s CRT Scanline Overlay */
+    .scanlines {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+        background-size: 100% 4px;
+        z-index: 15;
+        pointer-events: none; /* Lets you click right through it */
+    }
+
+    /* Glowing Retro Title */
     .header {
         position: absolute;
-        top: 24px;
-        left: 24px;
-        font-size: 24px;
-        font-weight: 800;
-        letter-spacing: -0.5px;
+        top: 30px;
+        left: 40px;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: lowercase;
         z-index: 100;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        color: #ff9d00;
+        text-shadow: 0 0 10px rgba(255, 157, 0, 0.6), 0 0 20px rgba(255, 157, 0, 0.4);
     }
 
     .video-container {
         position: relative;
         width: 100%;
-        max-width: 1200px;
+        max-width: 1600px;
         height: 100vh;
-        background: #181a20;
+        background: #0a0a0f;
         overflow: hidden;
     }
 
@@ -45,77 +62,111 @@
         width: 100%;
         height: 100%;
         object-fit: cover; 
-        background: #000;
+        background: radial-gradient(circle at center, #1a1a24 0%, #050508 100%);
     }
 
+    /* Draggable PIP Window */
     #localVideo {
         position: absolute;
-        top: 24px;
-        right: 24px;
-        width: 120px;
-        height: 160px;
+        top: 30px;
+        right: 40px;
+        width: 160px;
+        height: 220px;
         object-fit: cover;
-        border-radius: 16px;
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-        background: #111;
-        z-index: 10;
-        transition: transform 0.3s ease;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 255, 255, 0.3);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 255, 255, 0.2);
+        background: #000;
+        z-index: 20;
+        cursor: grab; /* Shows the grab hand */
     }
 
-    /* Modern Frosted Glass Control Dock */
+    #localVideo:active {
+        cursor: grabbing;
+    }
+
+    /* Ultra-Sleek Glass Dock */
     .controls {
         position: absolute;
-        bottom: 40px;
+        bottom: 50px;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
-        gap: 15px;
-        z-index: 20;
-        background: rgba(20, 22, 27, 0.6);
-        padding: 12px 24px;
-        border-radius: 50px;
-        backdrop-filter: blur(12px); /* The glass effect */
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        gap: 20px;
+        z-index: 25;
+        background: rgba(10, 10, 15, 0.5);
+        padding: 16px 32px;
+        border-radius: 16px;
+        backdrop-filter: blur(20px); 
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.7);
     }
 
     button {
-        padding: 14px 28px;
-        font-size: 16px;
-        font-weight: 600;
+        padding: 14px 32px;
+        font-size: 15px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        letter-spacing: 1px;
         border: none;
-        border-radius: 50px;
+        border-radius: 8px;
         cursor: pointer;
         color: white;
-        transition: all 0.2s ease;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    /* Start Button Styles */
-    .btn-start { background-color: #23a559; }
-    .btn-start:hover { background-color: #1d8b4b; }
+    /* Start Button - Cyan Glow */
+    .btn-start { 
+        background-color: #00d2ff; 
+        color: #000;
+        box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+    }
+    .btn-start:hover { 
+        background-color: #33dbff;
+        box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
+        transform: translateY(-2px);
+    }
 
-    /* Hardware Toggle Styles */
-    .btn-action { background-color: #2b2d31; }
-    .btn-action:hover { background-color: #383a40; }
-    .btn-action.off { background-color: #da373c; } /* Turns red when muted/off */
+    /* End Call Button - Neon Red */
+    .btn-end { 
+        background-color: #ff2a2a; 
+        box-shadow: 0 0 15px rgba(255, 42, 42, 0.4);
+    }
+    .btn-end:hover { 
+        background-color: #ff4d4d; 
+        box-shadow: 0 0 25px rgba(255, 42, 42, 0.6);
+        transform: translateY(-2px);
+    }
 
-    button:active {
-        transform: scale(0.95);
+    /* Hardware Toggles */
+    .btn-action { 
+        background-color: rgba(255, 255, 255, 0.05); 
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .btn-action:hover { 
+        background-color: rgba(255, 255, 255, 0.1); 
+        transform: translateY(-2px);
+    }
+    .btn-action.off { 
+        background-color: rgba(255, 42, 42, 0.2); 
+        color: #ff4d4d;
+        border-color: rgba(255, 42, 42, 0.4);
     }
     </style>
 </head>
 <body>
     <div class="header">phoone</div>
+    <div class="scanlines"></div>
 
     <div class="video-container">
         <video id="remoteVideo" autoplay playsinline></video>
         <video id="localVideo" autoplay muted playsinline></video>
         
         <div class="controls">
-            <button id="toggleMic" class="btn-action">Mic: ON</button>
-            <button id="toggleCam" class="btn-action">Cam: ON</button>
-            <button id="startCall" class="btn-start">Start Call</button>
+            <button id="toggleMic" class="btn-action">MIC: ON</button>
+            <button id="toggleCam" class="btn-action">CAM: ON</button>
+            <button id="callBtn" class="btn-start">CONNECT</button>
         </div>
     </div>
 
@@ -154,6 +205,31 @@
         const localVideo = document.getElementById('localVideo');
         const remoteVideo = document.getElementById('remoteVideo');
 
+        // --- Draggable PIP Logic ---
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        localVideo.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.clientX - localVideo.getBoundingClientRect().left;
+            offsetY = e.clientY - localVideo.getBoundingClientRect().top;
+            localVideo.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            // Override the default right-align to allow free movement
+            localVideo.style.right = 'auto'; 
+            localVideo.style.left = (e.clientX - offsetX) + 'px';
+            localVideo.style.top = (e.clientY - offsetY) + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            localVideo.style.cursor = 'grab';
+        });
+
+        // --- Camera Setup ---
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             .then(stream => {
                 localVideo.srcObject = stream;
@@ -161,72 +237,9 @@
                 socket.emit('join', ROOM); 
             })
             .catch(error => {
-                alert("Camera Blocked! Please click the slider icon next to the URL and set Camera to 'Allow'.");
+                alert("Camera Blocked! Please allow permissions in your browser.");
                 console.error("Camera Error:", error);
             });
 
-        // --- Hardware Controls (Mute/Video Off) ---
-        document.getElementById('toggleMic').onclick = () => {
-            const audioTrack = localStream.getAudioTracks()[0];
-            if (audioTrack) {
-                audioTrack.enabled = !audioTrack.enabled;
-                const btn = document.getElementById('toggleMic');
-                btn.innerText = audioTrack.enabled ? "Mic: ON" : "Mic: OFF";
-                btn.classList.toggle('off'); // Turns the button red
-            }
-        };
-
-        document.getElementById('toggleCam').onclick = () => {
-            const videoTrack = localStream.getVideoTracks()[0];
-            if (videoTrack) {
-                videoTrack.enabled = !videoTrack.enabled;
-                const btn = document.getElementById('toggleCam');
-                btn.innerText = videoTrack.enabled ? "Cam: ON" : "Cam: OFF";
-                btn.classList.toggle('off'); // Turns the button red
-            }
-        };
-
-        // --- The WebRTC Handshake Logic ---
-        socket.on('ready', createOffer);
-        
-        socket.on('offer', async (offer) => {
-            setupPeerConnection();
-            await peerConnection.setRemoteDescription(offer);
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            socket.emit('answer', answer, ROOM);
-        });
-
-        socket.on('answer', (answer) => peerConnection.setRemoteDescription(answer));
-        socket.on('candidate', (candidate) => peerConnection.addIceCandidate(new RTCIceCandidate(candidate)));
-
-        document.getElementById('startCall').onclick = createOffer;
-
-        async function createOffer() {
-            setupPeerConnection();
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
-            socket.emit('offer', offer, ROOM);
-        }
-
-        function setupPeerConnection() {
-            if (peerConnection) return; 
-            peerConnection = new RTCPeerConnection(servers);
-            
-            if (localStream) {
-                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-            }
-            
-            peerConnection.ontrack = event => {
-                remoteVideo.srcObject = event.streams[0];
-            };
-
-            peerConnection.onicecandidate = event => {
-                if (event.candidate) {
-                    socket.emit('candidate', event.candidate, ROOM);
-                }
-            };
-        }
-    </script>
-</body>
-</html>
+        // --- Hardware Controls ---
+        document.getElementById('toggleMic').onclick
