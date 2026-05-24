@@ -10,14 +10,14 @@
     }
 
     body {
-        background-color: #0f1115; /* Deep Discord-style dark mode */
+        background-color: #0f1115; 
         color: #ffffff;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
-        overflow: hidden; /* Prevents scrollbars on mobile */
+        overflow: hidden; 
     }
 
     /* Floating brand name */
@@ -32,7 +32,6 @@
         text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
 
-    /* The main screen */
     .video-container {
         position: relative;
         width: 100%;
@@ -42,15 +41,13 @@
         overflow: hidden;
     }
 
-    /* Mom's Video (Fills the entire screen) */
     #remoteVideo {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Prevents stretching */
+        object-fit: cover; 
         background: #000;
     }
 
-    /* Your Video (Floating Picture-in-Picture) */
     #localVideo {
         position: absolute;
         top: 24px;
@@ -66,30 +63,42 @@
         transition: transform 0.3s ease;
     }
 
-    /* Floating control bar */
+    /* Modern Frosted Glass Control Dock */
     .controls {
         position: absolute;
         bottom: 40px;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
-        gap: 20px;
+        gap: 15px;
         z-index: 20;
+        background: rgba(20, 22, 27, 0.6);
+        padding: 12px 24px;
+        border-radius: 50px;
+        backdrop-filter: blur(12px); /* The glass effect */
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     }
 
-    /* Discord-style button */
     button {
-        padding: 16px 40px;
-        font-size: 18px;
+        padding: 14px 28px;
+        font-size: 16px;
         font-weight: 600;
         border: none;
         border-radius: 50px;
         cursor: pointer;
-        background-color: #23a559; /* Green */
         color: white;
-        box-shadow: 0 8px 24px rgba(35, 165, 89, 0.4);
         transition: all 0.2s ease;
     }
+
+    /* Start Button Styles */
+    .btn-start { background-color: #23a559; }
+    .btn-start:hover { background-color: #1d8b4b; }
+
+    /* Hardware Toggle Styles */
+    .btn-action { background-color: #2b2d31; }
+    .btn-action:hover { background-color: #383a40; }
+    .btn-action.off { background-color: #da373c; } /* Turns red when muted/off */
 
     button:active {
         transform: scale(0.95);
@@ -101,11 +110,12 @@
 
     <div class="video-container">
         <video id="remoteVideo" autoplay playsinline></video>
-        
         <video id="localVideo" autoplay muted playsinline></video>
         
         <div class="controls">
-            <button id="startCall">Start Call</button>
+            <button id="toggleMic" class="btn-action">Mic: ON</button>
+            <button id="toggleCam" class="btn-action">Cam: ON</button>
+            <button id="startCall" class="btn-start">Start Call</button>
         </div>
     </div>
 
@@ -115,7 +125,6 @@
         const ROOM = 'family-room';
         let localStream, peerConnection;
 
-        // The Disguise: Metered TURN Servers
         const servers = {
           iceServers: [
               { urls: "stun:stun.relay.metered.ca:80" },
@@ -145,7 +154,6 @@
         const localVideo = document.getElementById('localVideo');
         const remoteVideo = document.getElementById('remoteVideo');
 
-        // Turn on camera and tell the matchmaker we are in the room
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             .then(stream => {
                 localVideo.srcObject = stream;
@@ -153,10 +161,30 @@
                 socket.emit('join', ROOM); 
             })
             .catch(error => {
-                // If Brave blocks the camera, this alert will pop up and tell you!
                 alert("Camera Blocked! Please click the slider icon next to the URL and set Camera to 'Allow'.");
                 console.error("Camera Error:", error);
             });
+
+        // --- Hardware Controls (Mute/Video Off) ---
+        document.getElementById('toggleMic').onclick = () => {
+            const audioTrack = localStream.getAudioTracks()[0];
+            if (audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                const btn = document.getElementById('toggleMic');
+                btn.innerText = audioTrack.enabled ? "Mic: ON" : "Mic: OFF";
+                btn.classList.toggle('off'); // Turns the button red
+            }
+        };
+
+        document.getElementById('toggleCam').onclick = () => {
+            const videoTrack = localStream.getVideoTracks()[0];
+            if (videoTrack) {
+                videoTrack.enabled = !videoTrack.enabled;
+                const btn = document.getElementById('toggleCam');
+                btn.innerText = videoTrack.enabled ? "Cam: ON" : "Cam: OFF";
+                btn.classList.toggle('off'); // Turns the button red
+            }
+        };
 
         // --- The WebRTC Handshake Logic ---
         socket.on('ready', createOffer);
@@ -182,20 +210,17 @@
         }
 
         function setupPeerConnection() {
-            if (peerConnection) return; // Don't setup twice
+            if (peerConnection) return; 
             peerConnection = new RTCPeerConnection(servers);
             
-            // Pack our video/audio into the connection
             if (localStream) {
                 localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
             }
             
-            // When we receive the other person's video, put it in the right box
             peerConnection.ontrack = event => {
                 remoteVideo.srcObject = event.streams[0];
             };
 
-            // Send network routing info to the matchmaker
             peerConnection.onicecandidate = event => {
                 if (event.candidate) {
                     socket.emit('candidate', event.candidate, ROOM);
